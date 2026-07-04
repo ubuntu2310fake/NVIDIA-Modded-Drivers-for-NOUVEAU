@@ -18,6 +18,17 @@ The wrapper intercepts DRM-related system calls (`ioctl`, `mmap`, `mmap64`) usin
 
 ---
 
+## Tested on:
+- **Device**: Lenovo LOQ 15ARP9
+- **CPU**: AMD Ryzen 5 7235HS
+- **RAM**: 24GB
+- **GPU**: NVIDIA GeForce RTX 3050 6GB Laptop GPU
+- **OS**: Fedora Linux 44 (KDE Plasma Desktop Edition)
+- **Kernel Version**: 7.0.14-201.fc44.x86_64
+- **NVIDIA Driver Version**: 610.43.02 (Open Kernel Modules)
+
+---
+
 ## Recreating the Environment (Build Guide)
 
 To ensure your environment matches ours exactly, you must install the required dependencies and build both **Mesa 23.3.6** and the **NVIDIA Open GPU Kernel Modules (v610.43.02)**. 
