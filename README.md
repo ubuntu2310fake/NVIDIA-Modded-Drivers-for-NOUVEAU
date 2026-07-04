@@ -16,10 +16,48 @@ The wrapper intercepts DRM-related system calls (`ioctl`, `mmap`, `mmap64`) usin
 > [!NOTE]
 > Since GPU command submission (`NOUVEAU_EXEC`) is bypassed, no actual drawing operations take place on the hardware. The target buffer remains empty/unmodified, but the logic successfully passes all initialization checks, allocations, wayland surface integrations, and runs the rendering loop continuously without crashing. It functions as a highly advanced **Mock/Null Hybrid Driver** for reverse engineering.
 
-## Setup & Compilation
+---
+
+## Recreating the Environment (Build Guide)
+
+To ensure your environment matches ours exactly, you need to download and compile the official **Mesa 23.3.6** and **NVIDIA Open GPU Kernel Modules** from source.
+
+### 1. Build and Load NVIDIA Open Kernel Modules
+Clone and build the NVIDIA open kernel modules:
+```bash
+git clone https://github.com/NVIDIA/open-gpu-kernel-modules.git
+cd open-gpu-kernel-modules
+make -j$(nproc)
+# Load the built nvidia-drm modules
+sudo make modules_install
+sudo depmod -a
+```
+
+### 2. Download and Build Mesa 23.3.6
+Download and compile the exact Mesa version:
+```bash
+wget https://archive.mesa3d.org/mesa-23.3.6.tar.xz
+tar -xf mesa-23.3.6.tar.xz
+cd mesa-23.3.6
+
+# Configure the build (ensure Nouveau Gallium and NVK Vulkan drivers are enabled)
+meson setup build \
+  -Dgallium-drivers=nouveau \
+  -Dvulkan-drivers=nouveau \
+  -Dglx=dri \
+  -Dplatforms=wayland,x11 \
+  -Dbuildtype=release
+
+# Compile the drivers
+meson compile -C build
+```
+
+---
+
+## Running the Wrapper
 
 ### 1. Build the wrapper
-Compile the wrapper into a shared library:
+Compile the wrapper library:
 ```bash
 ./compile.sh
 ```
