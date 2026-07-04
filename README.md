@@ -20,12 +20,39 @@ The wrapper intercepts DRM-related system calls (`ioctl`, `mmap`, `mmap64`) usin
 
 ## Recreating the Environment (Build Guide)
 
-To ensure your environment matches ours exactly, you need to download and compile the official **Mesa 23.3.6** and **NVIDIA Open GPU Kernel Modules** from source.
+To ensure your environment matches ours exactly, you need to download and compile the official **Mesa 23.3.6** and **NVIDIA Open GPU Kernel Modules (v610.43.02)** from source.
 
-### 1. Build and Load NVIDIA Open Kernel Modules
-Clone and build the NVIDIA open kernel modules:
+### 1. Install Build Dependencies
+
+Install the required compiler, build tools, and development headers for your Linux distribution:
+
+#### Debian / Ubuntu
 ```bash
-git clone https://github.com/NVIDIA/open-gpu-kernel-modules.git
+sudo apt update
+sudo apt install -y build-essential meson ninja-build git wget bison flex \
+  python3-mako pkg-config zlib1g-dev libdrm-dev libwayland-dev libelf-dev \
+  libx11-dev libxcb-dev libxdg-basedir-dev
+```
+
+#### Fedora
+```bash
+sudo dnf install -y gcc gcc-c++ make meson ninja-build git wget bison flex \
+  python3-mako pkgconfig zlib-devel libdrm-devel wayland-devel elfutils-libelf-devel \
+  libX11-devel libxcb-devel
+```
+
+#### Arch Linux
+```bash
+sudo pacman -Syu --needed base-devel meson ninja git wget bison flex \
+  python-mako pkgconf zlib libdrm wayland elfutils libx11 libxcb
+```
+
+---
+
+### 2. Build and Load NVIDIA Open Kernel Modules (v610.43.02)
+Clone the exact version of the NVIDIA open kernel modules and build it:
+```bash
+git clone --branch 610.43.02 https://github.com/NVIDIA/open-gpu-kernel-modules.git
 cd open-gpu-kernel-modules
 make -j$(nproc)
 # Load the built nvidia-drm modules
@@ -33,7 +60,9 @@ sudo make modules_install
 sudo depmod -a
 ```
 
-### 2. Download and Build Mesa 23.3.6
+---
+
+### 3. Download and Build Mesa 23.3.6
 Download and compile the exact Mesa version:
 ```bash
 wget https://archive.mesa3d.org/mesa-23.3.6.tar.xz
