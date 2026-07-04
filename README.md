@@ -20,7 +20,10 @@ The wrapper intercepts DRM-related system calls (`ioctl`, `mmap`, `mmap64`) usin
 
 ## Recreating the Environment (Build Guide)
 
-To ensure your environment matches ours exactly, you need to download and compile the official **Mesa 23.3.6** and **NVIDIA Open GPU Kernel Modules (v610.43.02)** from source.
+To ensure your environment matches ours exactly, you must install the required dependencies and build both **Mesa 23.3.6** and the **NVIDIA Open GPU Kernel Modules (v610.43.02)**. 
+
+> [!IMPORTANT]
+> **All repositories and directories must be kept in the same root folder** (`NVIDIA-Modded-Drivers-for-NOUVEAU`) so that the relative paths inside the runner scripts resolve correctly.
 
 ### 1. Install Build Dependencies
 
@@ -49,8 +52,17 @@ sudo pacman -Syu --needed base-devel meson ninja git wget bison flex \
 
 ---
 
-### 2. Build and Load NVIDIA Open Kernel Modules (v610.43.02)
-Clone the exact version of the NVIDIA open kernel modules and build it:
+### 2. Clone this Repository
+First, clone this repository and enter it:
+```bash
+git clone https://github.com/ubuntu2310fake/NVIDIA-Modded-Drivers-for-NOUVEAU.git
+cd NVIDIA-Modded-Drivers-for-NOUVEAU
+```
+
+---
+
+### 3. Build and Load NVIDIA Open Kernel Modules (v610.43.02)
+Inside the `NVIDIA-Modded-Drivers-for-NOUVEAU` directory, clone the exact version of the NVIDIA open kernel modules and build it:
 ```bash
 git clone --branch 610.43.02 https://github.com/NVIDIA/open-gpu-kernel-modules.git
 cd open-gpu-kernel-modules
@@ -58,12 +70,13 @@ make -j$(nproc)
 # Load the built nvidia-drm modules
 sudo make modules_install
 sudo depmod -a
+cd ..
 ```
 
 ---
 
-### 3. Download and Build Mesa 23.3.6
-Download and compile the exact Mesa version:
+### 4. Download and Build Mesa 23.3.6
+Inside the `NVIDIA-Modded-Drivers-for-NOUVEAU` directory, download and compile the exact Mesa version:
 ```bash
 wget https://archive.mesa3d.org/mesa-23.3.6.tar.xz
 tar -xf mesa-23.3.6.tar.xz
@@ -79,6 +92,7 @@ meson setup build \
 
 # Compile the drivers
 meson compile -C build
+cd ..
 ```
 
 ---
@@ -86,7 +100,7 @@ meson compile -C build
 ## Running the Wrapper
 
 ### 1. Build the wrapper
-Compile the wrapper library:
+Compile the wrapper library inside the root folder:
 ```bash
 ./compile.sh
 ```
@@ -106,7 +120,10 @@ To run an OpenGL application (like `glxgears`) under the Mesa Nouveau driver:
 ```
 
 ## Structure
-- [hook.c](file:///home/truonghieu/Documents/hook.c): The core `LD_PRELOAD` hooking logic.
-- [compile.sh](file:///home/truonghieu/Documents/compile.sh): Build script.
-- [run_nouveau_vulkan.sh](file:///home/truonghieu/Documents/run_nouveau_vulkan.sh): Vulkan/NVK runner.
-- [run_nouveau_opengl.sh](file:///home/truonghieu/Documents/run_nouveau_opengl.sh): OpenGL/Nouveau runner.
+- [hook.c](file:///home/truonghieu/Documents/NVIDIA-Modded-Drivers-for-NOUVEAU/hook.c): The core `LD_PRELOAD` hooking logic.
+- [compile.sh](file:///home/truonghieu/Documents/NVIDIA-Modded-Drivers-for-NOUVEAU/compile.sh): Build script.
+- [run_nouveau_vulkan.sh](file:///home/truonghieu/Documents/NVIDIA-Modded-Drivers-for-NOUVEAU/run_nouveau_vulkan.sh): Vulkan/NVK runner.
+- [run_nouveau_opengl.sh](file:///home/truonghieu/Documents/NVIDIA-Modded-Drivers-for-NOUVEAU/run_nouveau_opengl.sh): OpenGL/Nouveau runner.
+
+## License
+Licensed under the GNU General Public License v3.0 (GPL-3.0) only.
